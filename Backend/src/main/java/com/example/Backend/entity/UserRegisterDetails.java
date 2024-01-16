@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "User_Details")
-public class UserDetails {
+public class UserRegisterDetails {
     @Id
     private Integer id;
     private String username;

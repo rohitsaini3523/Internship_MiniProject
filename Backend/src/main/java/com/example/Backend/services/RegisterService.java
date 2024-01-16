@@ -1,7 +1,7 @@
 package com.example.Backend.services;
 
-import com.example.Backend.entity.UserDetails;
-import com.example.Backend.model.User;
+import com.example.Backend.entity.UserRegisterDetails;
+import com.example.Backend.model.UserRegister;
 import com.example.Backend.respository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,13 +12,13 @@ public class RegisterService {
     {
         this.userRepository = userRepository;
     }
-    public void register(User user)
+    public void register(UserRegister userRegister)
     {
-        UserDetails userDetails = new UserDetails();
-        userDetails.setId(1);
-        userDetails.setUsername(user.getUsername());
-        userDetails.setPassword(user.getPassword());
-        userRepository.save(userDetails);
-        System.out.println("User logged in is "+ user.getUsername());
+        UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
+        userRegisterDetails.setId(1);
+        userRegisterDetails.setUsername(userRegister.getUsername());
+        userRegisterDetails.setPassword(userRegister.getPassword());
+        userRepository.save(userRegisterDetails);
+        System.out.println("User Registered is: "+ userRegister.getUsername());
     }
 }
