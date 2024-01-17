@@ -3,8 +3,10 @@ package com.example.Backend.services;
 import com.example.Backend.entity.UserRegisterDetails;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.respository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class LoginService {
     UserRepository userRepository;
@@ -23,6 +25,7 @@ public class LoginService {
         UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
         if(userRegisterDetails != null)
         {
+            log.info("User Logged in is: {}!",userLogin.getUsername());
             return true;
         }
         return false;
