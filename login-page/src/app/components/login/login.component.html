@@ -1,0 +1,22 @@
+<p>login works!</p>
+
+
+<br>
+<form [formGroup]="loginForm">
+<p-card header="Login" [style]=" { width: '300px' }">
+    <div class="field">
+        <label for="username">USername</label>
+        <input type="text" pInputText formControlName="username" name="username" placeholder="enter your name heree"/>
+
+    </div>
+    <div class="field">
+        <label for="passwword">Password</label>
+        <input type="password" pInputText formControlName="passwword" name="passwword" placeholder="enter your password"/>
+
+    </div>
+    <p-button label="sign-in" ></p-button>
+    <div class="mt-1">
+        dont have an account yet? <a routerLink="/register">register here</a>
+    </div>
+</p-card>
+</form>
