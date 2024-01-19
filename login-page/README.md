@@ -9,7 +9,11 @@ cmd :
 
 npm install primeng
 
-
+Features used :
+1) Cards : import { CardModule } from 'primeng/card';
+2) Button : import { ButtonModule } from 'primeng/button';
+3) InputText : import { InputTextModule } from 'primeng/inputtext';
+have added in app.module.ts
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.1.0.
 
