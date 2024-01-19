@@ -2,7 +2,6 @@ package com.example.Backend.controller;
 
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.model.UserRegister;
-import com.example.Backend.respository.UserRepository;
 import com.example.Backend.services.LoginService;
 import com.example.Backend.services.RegisterService;
 import lombok.extern.slf4j.Slf4j;
