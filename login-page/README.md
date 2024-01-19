@@ -1,7 +1,9 @@
 # LoginPract
 
+![image](https://github.com/rohitsaini3523/Internship_MiniProject/assets/121424500/c99d1ea8-78e8-45c6-b422-93b308e31a8e)
 
-##Use of PrimeNg
+
+## Use of PrimeNg
 It is a popular open-source UI component library for Angular. It provides a rich set of pre-built components that you can use to build beautiful and functional web applications.
 cmd : 
 
