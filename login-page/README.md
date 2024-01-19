@@ -1,4 +1,4 @@
-# LoginPract
+# Login Page
 
 ![image](https://github.com/rohitsaini3523/Internship_MiniProject/assets/121424500/c99d1ea8-78e8-45c6-b422-93b308e31a8e)
 
