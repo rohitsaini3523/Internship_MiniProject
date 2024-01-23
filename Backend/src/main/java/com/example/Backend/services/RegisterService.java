@@ -17,11 +17,10 @@ public class RegisterService {
     public void register(UserRegister userRegister)
     {
         UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
-
-        userRegisterDetails.setId(1);
         userRegisterDetails.setUsername(userRegister.getUsername());
         userRegisterDetails.setPassword(userRegister.getPassword());
         userRepository.save(userRegisterDetails);
+        log.info("User Registered with ID: {}", userRegisterDetails.getId());
         log.info("User Registered: {}",userRegister.getUsername());
     }
 }

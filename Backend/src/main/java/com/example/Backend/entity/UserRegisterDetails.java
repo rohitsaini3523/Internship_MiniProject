@@ -1,12 +1,7 @@
 package com.example.Backend.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Data
 @Builder
@@ -16,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "User_Details")
 public class UserRegisterDetails {
     @Id
-    private Integer id;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
     private String username;
     private String password;
 }
