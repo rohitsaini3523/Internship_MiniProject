@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserLogin {
+public class UserContact {
     @Size(min=5,message = "Username must be minimum of 5 character!")
     @NotBlank(message = "Username is Required!")
     private String username;
-    @Size(min=8,message = "Password must be minimum of 8 character!")
-    @NotBlank(message = "Password is Required!")
-    private String password;
+    @Size(min = 10, message = "Phone number Should of length 10")
+    @NotBlank(message = "Phone Number is required!")
+    private String phoneNumber;
+
 }

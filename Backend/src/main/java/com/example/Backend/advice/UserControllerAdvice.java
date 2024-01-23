@@ -32,7 +32,7 @@ public class UserControllerAdvice {
     public ResponseEntity<Response> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex) {
         response.setError("User Registration Error");
-        response.setMessage("Username Already Exists!");
+        response.setMessage("Already Exists!");
         log.error("Data integrity violation occurred during user registration: {}",ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
@@ -53,6 +53,15 @@ public class UserControllerAdvice {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         response.setMessage(message);
+        log.error("Not Valid Argument: {}", message);
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Response> handleException( Exception ex)
+    {
+        response.setError("Bad Request");
+        response.setMessage(ex.getMessage());
+        log.error("Bad Request\n Error: {}", ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }
