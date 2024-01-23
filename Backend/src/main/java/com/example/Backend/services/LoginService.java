@@ -22,7 +22,7 @@ public class LoginService {
     }
     public boolean login(UserLogin userLogin)
     {
-        UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin.getUsername(),userLogin.getPassword());
+        UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin);
         if(userRegisterDetails != null)
         {
             log.info("User Logged in is: {}!",userLogin.getUsername());
