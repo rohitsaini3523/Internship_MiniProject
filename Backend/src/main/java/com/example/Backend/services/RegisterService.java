@@ -14,13 +14,20 @@ public class RegisterService {
     {
         this.userRepository = userRepository;
     }
-    public void register(UserRegister userRegister)
+    public String register(UserRegister userRegister)
     {
         UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
         userRegisterDetails.setUsername(userRegister.getUsername());
         userRegisterDetails.setPassword(userRegister.getPassword());
-        userRepository.save(userRegisterDetails);
-        log.info("User Registered with ID: {}", userRegisterDetails.getId());
-        log.info("User Registered: {}",userRegister.getUsername());
+        try{
+            userRepository.save(userRegisterDetails);
+            log.info("User Registered with ID: {}", userRegisterDetails.getId());
+            log.info("User Registered: {}",userRegister.getUsername());
+            return "Registered";
+        } catch (Exception e)
+        {
+            log.error("Exception Occured: {}",e.toString());
+            return "Already Existed";
+        }
     }
 }

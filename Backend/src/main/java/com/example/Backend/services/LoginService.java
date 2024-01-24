@@ -17,18 +17,28 @@ public class LoginService {
     public UserLogin getUserDetails(String name)
     {
         UserRegisterDetails userRegisterDetails = userRepository.findByUsername(name);
-        return UserLogin.builder().username(userRegisterDetails.getUsername())
-                .password(userRegisterDetails.getPassword()).build();
+        if(userRegisterDetails !=null) {
+            return UserLogin.builder().username(userRegisterDetails.getUsername())
+                    .password(userRegisterDetails.getPassword()).build();
+        }
+        else{
+            return UserLogin.builder().username("Not_Found").password("Not_Found").build();
+        }
     }
-    public boolean login(UserLogin userLogin)
+    public String login(UserLogin userLogin)
     {
         UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin);
-        if(userRegisterDetails != null)
-        {
-            log.info("User Logged in is: {}!",userLogin.getUsername());
-            return true;
+        UserRegisterDetails FindUsername = userRepository.findByUsername(userLogin.getUsername());
+        if(FindUsername != null) {
+            if (userRegisterDetails != null) {
+                log.info("User Logged in is: {}!", userLogin.getUsername());
+                return "Found";
+            }
+            else{
+                return "Wrong Password";
+            }
         }
-        return false;
+        return "Not Found";
     }
 
 }
