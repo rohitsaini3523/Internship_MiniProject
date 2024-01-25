@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class LoginService {
+public class LoginService implements LoginServiceInterface{
     UserRepository userRepository;
     LoginService(UserRepository userRepository)
     {

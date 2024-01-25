@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class RegisterService {
+public class RegisterService implements RegisterServiceInterface{
     UserRepository userRepository;
     RegisterService(UserRepository userRepository)
     {

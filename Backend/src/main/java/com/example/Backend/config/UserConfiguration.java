@@ -15,4 +15,5 @@ public class UserConfiguration {
                 .info(new Info().title("Login and Registration API")
                         .description("Endpoint for user login and Registration"));
     }
+
 }

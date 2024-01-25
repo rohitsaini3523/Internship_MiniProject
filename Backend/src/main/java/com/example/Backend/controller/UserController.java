@@ -1,16 +1,19 @@
 package com.example.Backend.controller;
 
+import com.example.Backend.exceptions.InvalidInputException;
+import com.example.Backend.exceptions.UserNotFoundException;
+import com.example.Backend.exceptions.UserRegistrationException;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.model.UserRegister;
-import com.example.Backend.services.LoginService;
-import com.example.Backend.services.RegisterService;
+import com.example.Backend.services.LoginServiceInterface;
+import com.example.Backend.services.RegisterServiceInterface;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,12 +26,12 @@ import java.util.List;
 @RestController
 public class UserController {
 
-    RegisterService registerService;
-    LoginService loginService;
+    RegisterServiceInterface registerServiceInterface;
+    LoginServiceInterface loginServiceInterface;
 
-    UserController(RegisterService registerService, LoginService loginService) {
-        this.registerService = registerService;
-        this.loginService = loginService;
+    UserController(RegisterServiceInterface registerServiceInterface, LoginServiceInterface loginServiceInterface) {
+        this.registerServiceInterface = registerServiceInterface;
+        this.loginServiceInterface = loginServiceInterface;
     }
 
     @Operation(summary = "Display user details", description = "Get user details by username")
@@ -38,22 +41,22 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
     })
     @GetMapping("/user/{name}")
-    public ResponseEntity<UserLogin> displayUser(@PathVariable(value = "name") String name) {
-        if(name.isEmpty())
-        {
-            log.info("Invalid Request");
-            return new ResponseEntity<>(UserLogin.builder().username("Empty Username").build(),HttpStatus.BAD_REQUEST);
-        }
-        else {
-            UserLogin userLogin = this.loginService.getUserDetails(name);
-            if (userLogin.getUsername().equals("Not_Found")) {
+    public ResponseEntity<?> displayUser(@PathVariable(value = "name") String username) {
+        UserLogin userLogin = this.loginServiceInterface.getUserDetails(username);
+        switch (StringUtils.isEmpty(username)?"Empty": userLogin.getUsername()) {
+            case "Empty" -> {
+                log.info("Invalid Request");
+                throw new InvalidInputException("Empty Username");
+            }
+            case "Not_Found" -> {
                 log.error("User Doesn't exists");
-                return new ResponseEntity<>(userLogin, HttpStatus.NOT_FOUND);
-            } else {
+                throw new UserNotFoundException("User Doesn't Exists");
+            }
+            default -> {
                 log.info("User Fetched Successfully: {}", userLogin.getUsername());
-                return new ResponseEntity<>(userLogin, HttpStatus.OK);
             }
         }
+        return new ResponseEntity<>(userLogin, HttpStatus.OK);
     }
 
     @Operation(summary = "Login user", description = "Authenticate user with provided credentials")
@@ -66,35 +69,29 @@ public class UserController {
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@Valid @RequestBody UserLogin userLogin, BindingResult bindingResult) {
         StringBuilder errorMessage = new StringBuilder();
-        try {
-            String loginServiceResponse = this.loginService.login(userLogin);
-            if (loginServiceResponse.equals("Found")) {
-                log.info("User Login: {}", userLogin.getUsername());
-                return new ResponseEntity<>("User Logged in Successfully!", HttpStatus.ACCEPTED);
-            }
-            else {
-                if (bindingResult.hasErrors()) {
+            String loginServiceResponse = this.loginServiceInterface.login(userLogin);
+            switch (bindingResult.hasErrors()?"Error" : loginServiceResponse) {
+                case "Found" -> {
+                    log.info("User Login: {}", userLogin.getUsername());
+                    return new ResponseEntity<>("User Logged in Successfully!", HttpStatus.ACCEPTED);
+                }
+                case "Wrong Password" -> {
+                    log.info("Wrong Password for user: {}", userLogin.getUsername());
+                    throw new InvalidInputException("Wrong Password!");
+                }
+                case "Error" -> {
                     List<FieldError> errors = bindingResult.getFieldErrors();
                     errorMessage = new StringBuilder("Validation errors: ");
                     for (FieldError error : errors) {
-                        errorMessage.append(error.getDefaultMessage()).append("\n");
+                        errorMessage.append(error.getDefaultMessage()).append(". ");
                     }
-                    throw new MethodArgumentNotValidException(null, bindingResult);
+                    throw new InvalidInputException(errorMessage.toString());
                 }
-                else if(loginServiceResponse.equals("Wrong Password"))
-                {
-                    log.info("Wrong Password for user: {}", userLogin.getUsername());
-                    return new ResponseEntity<>("Wrong Password!", HttpStatus.UNAUTHORIZED);
-                }
-                else if(loginServiceResponse.equals("Not Found"))
-                {
+                case "Not Found" -> {
                     log.info("User Doesn't Exists!");
-                    return new ResponseEntity<>("User Doesn't Exist!", HttpStatus.NOT_FOUND);
+                    throw new UserNotFoundException("User Doesn't Exist!");
                 }
             }
-        } catch (MethodArgumentNotValidException e) {
-            log.error("Validation Errors: {}", errorMessage);
-        }
         return new ResponseEntity<>(errorMessage.toString(), HttpStatus.NOT_FOUND);
     }
 
@@ -105,32 +102,27 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Insufficient Parameters!")
     })
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegister userRegister, BindingResult bindingResult) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegister userRegister, BindingResult bindingResult) {
         StringBuilder errorMessage = new StringBuilder();
-        try {
-            String registerServiceResponse = this.registerService.register(userRegister);
-            if (registerServiceResponse.equals("Registered")) {
-                log.info("User Registered Successfully!");
-                return new ResponseEntity<>("User Registered Successfully!", HttpStatus.CREATED);
-            }
-            else {
-                if (bindingResult.hasErrors()) {
+            String registerServiceResponse = this.registerServiceInterface.register(userRegister);
+            switch(bindingResult.hasErrors()?"Error":registerServiceResponse){
+                case "Registered"-> {
+                    log.info("User Registered Successfully!");
+                    return new ResponseEntity<>("User Registered Successfully!", HttpStatus.CREATED);
+                }
+                case "Error" -> {
                     List<FieldError> errors = bindingResult.getFieldErrors();
                     errorMessage = new StringBuilder("Validation errors: ");
                     for (FieldError error : errors) {
-                        errorMessage.append(error.getDefaultMessage()).append("\n");
+                        errorMessage.append(error.getDefaultMessage()).append(". ");
                     }
-                    throw new MethodArgumentNotValidException(null, bindingResult);
+                    throw new InvalidInputException(errorMessage.toString());
                 }
-                else if(registerServiceResponse.equals("Already Existed"))
-                {
+                case "Already Existed"->{
                     log.error("User Exists Already!");
-                    return new ResponseEntity<>("User Exists Already!", HttpStatus.CONFLICT);
+                    throw new UserRegistrationException("User Exists Already!");
                 }
             }
-        } catch (MethodArgumentNotValidException e) {
-            log.error("Validation Errors: {}", errorMessage);
-        }
         return new ResponseEntity<>("User Could Not Be Registered! \n"+errorMessage , HttpStatus.BAD_REQUEST);
     }
 }
