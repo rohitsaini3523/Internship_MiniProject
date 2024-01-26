@@ -1,6 +1,8 @@
 package com.example.Backend.services;
 
 import com.example.Backend.entity.UserRegisterDetails;
+import com.example.Backend.exceptions.InvalidInputException;
+import com.example.Backend.exceptions.UserNotFoundException;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.respository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,7 @@ public class LoginService implements LoginServiceInterface{
             return UserLogin.builder().username(userRegisterDetails.getUsername())
                     .password(userRegisterDetails.getPassword()).build();
         }
-        else{
-            return UserLogin.builder().username("Not_Found").password("Not_Found").build();
-        }
+        throw new UserNotFoundException("User doesn't exists");
     }
     public String login(UserLogin userLogin)
     {
@@ -34,11 +34,9 @@ public class LoginService implements LoginServiceInterface{
                 log.info("User Logged in is: {}!", userLogin.getUsername());
                 return "Found";
             }
-            else{
-                return "Wrong Password";
-            }
+            throw new InvalidInputException("Wrong Password!");
         }
-        return "Not Found";
+        throw new UserNotFoundException("User doesn't exists");
     }
 
 }

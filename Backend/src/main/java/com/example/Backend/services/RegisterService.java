@@ -1,9 +1,12 @@
 package com.example.Backend.services;
 
 import com.example.Backend.entity.UserRegisterDetails;
+import com.example.Backend.exceptions.UserRegistrationException;
 import com.example.Backend.model.UserRegister;
 import com.example.Backend.respository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -19,15 +22,9 @@ public class RegisterService implements RegisterServiceInterface{
         UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
         userRegisterDetails.setUsername(userRegister.getUsername());
         userRegisterDetails.setPassword(userRegister.getPassword());
-        try{
-            userRepository.save(userRegisterDetails);
-            log.info("User Registered with ID: {}", userRegisterDetails.getId());
-            log.info("User Registered: {}",userRegister.getUsername());
-            return "Registered";
-        } catch (Exception e)
-        {
-            log.error("Exception Occured: {}",e.toString());
-            return "Already Existed";
-        }
+        userRepository.save(userRegisterDetails);
+        log.info("User Registered with ID: {}", userRegisterDetails.getId());
+        log.info("User Registered: {}", userRegister.getUsername());
+        return "Registered";
     }
 }
