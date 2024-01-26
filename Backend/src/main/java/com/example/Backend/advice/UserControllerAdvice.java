@@ -4,11 +4,16 @@ import com.example.Backend.exceptions.InvalidInputException;
 import com.example.Backend.exceptions.UserNotFoundException;
 import com.example.Backend.model.Response;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @ControllerAdvice
@@ -40,12 +45,15 @@ public class UserControllerAdvice {
         log.error("Invalid Input Error: {}", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response> handleAllExceptions(Exception ex) {
-        response.setError("Internal Server Error");
-        response.setMessage(ex.getMessage());
-        log.error("Internal Server Error: {}", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Response> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
+    {
+        String message = "";
+        response.setError("Not Valid Argument");
+        message = ex.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        response.setMessage(message);
+        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 }

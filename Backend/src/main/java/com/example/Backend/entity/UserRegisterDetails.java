@@ -15,7 +15,7 @@ import lombok.*;
 })
 public class UserRegisterDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @NotNull
     private String username;

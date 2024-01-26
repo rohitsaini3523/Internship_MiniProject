@@ -51,14 +51,7 @@ public class UserController {
 
     })
     @PostMapping("/login")
-    public ResponseEntity<String> loginUser(@Valid @RequestBody UserLogin userLogin, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            String errorMessage = errors.stream()
-                    .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.joining(". "));
-            throw new InvalidInputException(errorMessage);
-        }
+    public ResponseEntity<String> loginUser(@Valid @RequestBody UserLogin userLogin) {
         this.loginServiceInterface.login(userLogin);
         log.info("User Login: {}", userLogin.getUsername());
         return new ResponseEntity<>("User Logged in Successfully!", HttpStatus.ACCEPTED);
@@ -71,14 +64,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Insufficient Parameters!")
     })
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegister userRegister, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            List<FieldError> errors = bindingResult.getFieldErrors();
-            String errorMessage = errors.stream()
-                    .map(FieldError::getDefaultMessage)
-                    .collect(Collectors.joining(". "));
-            throw new InvalidInputException(errorMessage);
-        }
+    public ResponseEntity<String> registerUser(@Valid @RequestBody UserRegister userRegister) {
         this.registerServiceInterface.register(userRegister);
         log.info("User Registered Successfully!");
         return new ResponseEntity<>("User Registered Successfully!", HttpStatus.CREATED);
