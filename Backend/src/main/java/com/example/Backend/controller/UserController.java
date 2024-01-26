@@ -1,5 +1,4 @@
 package com.example.Backend.controller;
-import com.example.Backend.exceptions.InvalidInputException;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.model.UserRegister;
 import com.example.Backend.services.LoginServiceInterface;
@@ -8,16 +7,11 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
