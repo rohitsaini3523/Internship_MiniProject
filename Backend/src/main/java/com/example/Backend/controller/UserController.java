@@ -41,6 +41,18 @@ public class UserController {
         UserLogin userLogin = this.loginServiceInterface.getUserDetails(username);
         return new ResponseEntity<>(userLogin, HttpStatus.OK);
     }
+    @Operation(summary = "Display user contact details", description = "Get user contact details by {username}/contact")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404",description = "User Doesn't exists"),
+            @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
+    })
+    @GetMapping("/{name}/contact")
+    public ResponseEntity<?> displayUserContact(@PathVariable(value = "name") String username) {
+        UserContact userContact = this.contactServiceInterface.getContactDetails(username);
+        return new ResponseEntity<>(userContact, HttpStatus.OK);
+    }
+
+
 
     @Operation(summary = "Login user", description = "Authenticate user with provided credentials")
     @ApiResponses(value = {
@@ -69,7 +81,13 @@ public class UserController {
 
     }
 
-    @PostMapping("/{name}/contact")
+    @Operation(summary = "user Contact Update", description = "Add user contact details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "User Contact Details Added successfully!"),
+            @ApiResponse(responseCode = "409", description = "User Contact Details Exists Already!"),
+            @ApiResponse(responseCode = "401", description = "Insufficient Parameters!")
+    })
+    @PostMapping("/{name}/add/contact")
     public ResponseEntity<String> addContactDetails(@PathVariable(value="name") String name, @RequestBody @Valid UserContact userContact){
         if(!userContact.getUsername().equals(name))
         {
