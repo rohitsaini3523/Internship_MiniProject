@@ -2,7 +2,7 @@ package com.example.Backend.advice;
 
 import com.example.Backend.exceptions.InvalidInputException;
 import com.example.Backend.exceptions.UserNotFoundException;
-import com.example.Backend.model.Response;
+import com.example.Backend.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,51 +17,51 @@ import java.util.stream.Collectors;
 @Slf4j
 @ControllerAdvice
 public class UserControllerAdvice {
-    Response response = new Response();
+    ErrorResponse errorResponse = new ErrorResponse();
 
     @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<Response> handleUserNotFoundException(
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(
             UserNotFoundException ex) {
-        response.setError("User Not Found");
-        response.setMessage(ex.getMessage());
+        errorResponse.setError("User Not Found");
+        errorResponse.setMessage(ex.getMessage());
         log.error(" User not Found: {}",ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Response> handleDataIntegrityViolationException(
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
             DataIntegrityViolationException ex) {
-        response.setError("User Registration Error");
-        response.setMessage("Already Exists!");
+        errorResponse.setError("User Registration Error");
+        errorResponse.setMessage("Already Exists!");
         log.error("Data integrity violation occurred during user registration: {}",ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<Response> handleInvalidInputException( InvalidInputException ex)
+    public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex)
     {
-        response.setError("Invalid Input Error");
-        response.setMessage(ex.getMessage());
+        errorResponse.setError("Invalid Input Error");
+        errorResponse.setMessage(ex.getMessage());
         log.error("Invalid Input Error: {}", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Response> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
     {
         String message = "";
-        response.setError("Not Valid Argument");
+        errorResponse.setError("Not Valid Argument");
         message = ex.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
-        response.setMessage(message);
+        errorResponse.setMessage(message);
         log.error("Not Valid Argument: {}", message);
-        return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Response> handleException( Exception ex)
+    public ResponseEntity<ErrorResponse> handleException(Exception ex)
     {
-        response.setError("Bad Request");
-        response.setMessage(ex.getMessage());
+        errorResponse.setError("Bad Request");
+        errorResponse.setMessage(ex.getMessage());
         log.error("Bad Request\n Error: {}", ex.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }

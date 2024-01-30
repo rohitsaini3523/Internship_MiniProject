@@ -11,7 +11,7 @@ public class RequestAsyncConfig {
     public Executor getThreadPoolExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(4);
-        executor.setMaxPoolSize(8);
+        executor.setMaxPoolSize(12);
         executor.setThreadNamePrefix("RequestThread:- ");
         executor.initialize();
         return executor;
