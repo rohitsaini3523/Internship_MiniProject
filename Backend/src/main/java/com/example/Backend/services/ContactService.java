@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 public class ContactService implements ContactServiceInterface {
@@ -28,13 +31,17 @@ public class ContactService implements ContactServiceInterface {
         this.userContactValidator = userContactValidator;
     }
     @Override
-    public UserContact getContactDetails(String name) {
-        UserContactDetails userContactDetails = userContactRepository.findByUsername(name);
-        if(userContactDetails !=null) {
-            return UserContact.builder().username(userContactDetails.getUsername())
-                    .phoneNumber(userContactDetails.getPhoneNumber()).build();
+    public List<UserContact> getContactDetails(String name) {
+        List<UserContactDetails> userContactDetailsList = userContactRepository.findAllByUsername(name);
+        if (!userContactDetailsList.isEmpty()) {
+            return userContactDetailsList.stream()
+                    .map(contactDetails -> UserContact.builder()
+                            .username(contactDetails.getUsername())
+                            .phoneNumber(contactDetails.getPhoneNumber())
+                            .build())
+                    .collect(Collectors.toList());
         }
-        throw new UserNotFoundException("User Contact doesn't exists");
+        throw new UserNotFoundException("User Contacts don't exist for username: " + name);
     }
 
     @Override

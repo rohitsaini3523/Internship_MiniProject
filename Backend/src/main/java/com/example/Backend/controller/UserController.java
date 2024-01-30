@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
+import java.util.List;
+
 @CrossOrigin
 @Slf4j
 @RestController
@@ -48,8 +50,12 @@ public class UserController {
     })
     @GetMapping("/{name}/contact")
     public ResponseEntity<?> displayUserContact(@PathVariable(value = "name") String username) {
-        UserContact userContact = this.contactServiceInterface.getContactDetails(username);
-        return new ResponseEntity<>(userContact, HttpStatus.OK);
+        List<UserContact> userContacts = this.contactServiceInterface.getContactDetails(username);
+        if (userContacts.isEmpty()) {
+            return new ResponseEntity<>("No contacts found for user: " + username, HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(userContacts, HttpStatus.OK);
+        }
     }
 
 
