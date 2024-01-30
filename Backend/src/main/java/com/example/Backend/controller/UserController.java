@@ -41,6 +41,7 @@ public class UserController {
     @GetMapping("/{name}")
     public ResponseEntity<?> displayUser(@PathVariable(value = "name") String username) {
         UserLogin userLogin = this.loginServiceInterface.getUserDetails(username);
+        log.info("Thread info: {}",Thread.currentThread());
         return new ResponseEntity<>(userLogin, HttpStatus.OK);
     }
     @Operation(summary = "Display user contact details", description = "Get user contact details by {username}/contact")

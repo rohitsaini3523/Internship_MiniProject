@@ -6,6 +6,7 @@ import com.example.Backend.model.UserRegister;
 import com.example.Backend.respository.UserRepository;
 import com.example.Backend.validator.UserRegisterValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -20,6 +21,7 @@ public class RegisterService implements RegisterServiceInterface{
         this.userRepository = userRepository;
         this.userRegisterValidator = userRegisterValidator;
     }
+    @Async("MultiRequestAsyncThread")
     @Override
     public String register(UserRegister userRegister)
     {

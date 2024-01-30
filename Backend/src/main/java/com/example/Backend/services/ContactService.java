@@ -9,6 +9,7 @@ import com.example.Backend.respository.UserContactRepository;
 import com.example.Backend.respository.UserRepository;
 import com.example.Backend.validator.UserContactValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -30,6 +31,7 @@ public class ContactService implements ContactServiceInterface {
         this.userRepository = userRepository;
         this.userContactValidator = userContactValidator;
     }
+    @Async("MultiRequestAsyncThread")
     @Override
     public List<UserContact> getContactDetails(String name) {
         List<UserContactDetails> userContactDetailsList = userContactRepository.findAllByUsername(name);
@@ -44,6 +46,7 @@ public class ContactService implements ContactServiceInterface {
         throw new UserNotFoundException("User Contacts don't exist for username: " + name);
     }
 
+    @Async("MultiRequestAsyncThread")
     @Override
     public String addContactDetails(String name, UserContact userContact) {
         Errors errors = new BeanPropertyBindingResult(userContact, "userLogin");

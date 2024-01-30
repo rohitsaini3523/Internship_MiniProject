@@ -7,6 +7,7 @@ import com.example.Backend.model.UserLogin;
 import com.example.Backend.respository.UserRepository;
 import com.example.Backend.validator.UserLoginValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -21,6 +22,7 @@ public class LoginService implements LoginServiceInterface{
         this.userRepository = userRepository;
         this.userLoginValidator = userLoginValidator;
     }
+    @Async("MultiRequestAsyncThread")
     @Override
     public UserLogin getUserDetails(String name)
     {
@@ -31,6 +33,7 @@ public class LoginService implements LoginServiceInterface{
         }
         throw new UserNotFoundException("User doesn't exists");
     }
+    @Async("MultiRequestAsyncThread")
     @Override
     public String login(UserLogin userLogin)
     {
