@@ -3,8 +3,9 @@ package com.example.Backend.services;
 import com.example.Backend.model.UserContact;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface ContactServiceInterface {
-    List<UserContact> getContactDetails(String username);
-    public String addContactDetails(String name, UserContact userContact);
+    CompletableFuture<List<UserContact>> getContactDetails(String username);
+    public CompletableFuture<String> addContactDetails(String name, UserContact userContact);
 }

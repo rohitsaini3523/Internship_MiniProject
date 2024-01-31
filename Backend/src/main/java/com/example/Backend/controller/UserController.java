@@ -1,5 +1,6 @@
 package com.example.Backend.controller;
 import com.example.Backend.exceptions.InvalidInputException;
+import com.example.Backend.exceptions.UserNotFoundException;
 import com.example.Backend.model.UserContact;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.model.UserRegister;
@@ -18,6 +19,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @CrossOrigin
 @Slf4j
@@ -41,10 +44,10 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
     })
     @GetMapping("/{name}")
-    public ResponseEntity<?> displayUser(@PathVariable(value = "name") String username) {
-        UserLogin userLogin = this.loginServiceInterface.getUserDetails(username);
-        log.info("Thread info: {}",Thread.currentThread());
-        return new ResponseEntity<>(userLogin, HttpStatus.OK);
+    public CompletableFuture<ResponseEntity<UserLogin>> displayUser(@PathVariable(value = "name") String username) {
+        return loginServiceInterface.getUserDetails(username)
+                .thenApply(userLogin -> ResponseEntity.ok().body(userLogin))
+                .exceptionally(ex -> {throw new UserNotFoundException("User Not Registered!");});
     }
     @Operation(summary = "Display user contact details", description = "Get user contact details by {username}/contact")
     @ApiResponses(value = {
@@ -52,17 +55,17 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
     })
     @GetMapping("/{name}/contact")
-    public ResponseEntity<?> displayUserContact(@PathVariable(value = "name") String username) {
-        List<UserContact> userContacts = this.contactServiceInterface.getContactDetails(username);
-        if (userContacts.isEmpty()) {
-            userResponse.setMessage("No contacts found for user: " + username);
-            return new ResponseEntity<>(userResponse, HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(userContacts, HttpStatus.OK);
-        }
+    public CompletableFuture<ResponseEntity<?>> displayUserContact(@PathVariable(value = "name") String username) {
+        CompletableFuture<List<UserContact>> userContactsFuture = this.contactServiceInterface.getContactDetails(username);
+        return userContactsFuture.thenApply(userContacts -> {
+            if (!userContacts.isEmpty()) {
+                log.info("User Contact Details Fetched: {}",username);
+                return new ResponseEntity<>(userContacts, HttpStatus.OK);
+            } else {
+                throw new UserNotFoundException("User Contact Details Doesn't Exists");
+            }
+        });
     }
-
-
 
     @Operation(summary = "Login user", description = "Authenticate user with provided credentials")
     @ApiResponses(value = {
@@ -71,8 +74,10 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Wrong Password!")
     })
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid  UserLogin userLogin) {
-        this.loginServiceInterface.login(userLogin);
+    public ResponseEntity<?> loginUser(@RequestBody @Valid UserLogin userLogin) throws ExecutionException, InterruptedException{
+        log.info("Thread info: {}",Thread.currentThread());
+        CompletableFuture<String> loginFuture = loginServiceInterface.login(userLogin);
+        String result = loginFuture.get();
         log.info("User Login: {}", userLogin.getUsername());
         userResponse.setMessage("User Logged in: " + userLogin.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
@@ -85,12 +90,13 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Insufficient Parameters!")
     })
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegister userRegister) {
-        this.registerServiceInterface.register(userRegister);
+    public ResponseEntity<UserResponse> registerUser(@RequestBody @Valid UserRegister userRegister) throws ExecutionException, InterruptedException {
+        CompletableFuture<String> registrationFuture = registerServiceInterface.register(userRegister);
+        registrationFuture.get();
+        UserResponse userResponse = new UserResponse();
         log.info("User Registered Successfully!");
-        userResponse.setMessage("User Registered Successfully!: "+ userRegister.getUsername());
+        userResponse.setMessage("User Registered Successfully!: " + userRegister.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
-
     }
 
     @Operation(summary = "user Contact Update", description = "Add user contact details")
@@ -100,14 +106,14 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Insufficient Parameters!")
     })
     @PostMapping("/{name}/add/contact")
-    public ResponseEntity<?> addContactDetails(@PathVariable(value="name") String name, @RequestBody @Valid UserContact userContact){
-        if(!userContact.getUsername().equals(name))
-        {
+    public ResponseEntity<?> addContactDetails(@PathVariable(value="name") String name, @RequestBody @Valid UserContact userContact) throws ExecutionException, InterruptedException {
+        if (!userContact.getUsername().equals(name)) {
             throw new InvalidInputException("Invalid Request!");
         }
-        this.contactServiceInterface.addContactDetails(name, userContact);
+        CompletableFuture<String> addContactFuture = contactServiceInterface.addContactDetails(name, userContact);
+        String result = addContactFuture.get();
         log.info("User Contact Detail Added!");
-        userResponse.setMessage("User Contact Details Added!: "+ userContact.getUsername());
-        return new ResponseEntity<>(userResponse,HttpStatus.CREATED);
+        userResponse.setMessage("User Contact Details Added!: " + userContact.getUsername());
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 }

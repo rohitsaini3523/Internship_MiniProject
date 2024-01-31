@@ -15,6 +15,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,38 +34,41 @@ public class ContactService implements ContactServiceInterface {
     }
     @Async("MultiRequestAsyncThread")
     @Override
-    public List<UserContact> getContactDetails(String name) {
-        List<UserContactDetails> userContactDetailsList = userContactRepository.findAllByUsername(name);
-        if (!userContactDetailsList.isEmpty()) {
-            return userContactDetailsList.stream()
-                    .map(contactDetails -> UserContact.builder()
-                            .username(contactDetails.getUsername())
-                            .phoneNumber(contactDetails.getPhoneNumber())
-                            .build())
-                    .collect(Collectors.toList());
-        }
-        throw new UserNotFoundException("User Contacts don't exist for username: " + name);
+    public CompletableFuture<List<UserContact>> getContactDetails(String name) {
+        return CompletableFuture.supplyAsync(() -> {
+            List<UserContactDetails> userContactDetailsList = userContactRepository.findAllByUsername(name);
+            if (!userContactDetailsList.isEmpty()) {
+                return userContactDetailsList.stream()
+                        .map(contactDetails -> UserContact.builder()
+                                .username(contactDetails.getUsername())
+                                .phoneNumber(contactDetails.getPhoneNumber())
+                                .build())
+                        .collect(Collectors.toList());
+            }
+            throw new UserNotFoundException("User Contacts don't exist for username: " + name);
+        });
     }
 
     @Async("MultiRequestAsyncThread")
     @Override
-    public String addContactDetails(String name, UserContact userContact) {
-        Errors errors = new BeanPropertyBindingResult(userContact, "userLogin");
-        userContactValidator.validate(userContact, errors);
-        if(errors.hasErrors()) {
-            throw new InvalidInputException("Invalid Contact details");
-        }
-        UserRegisterDetails findUser = userRepository.findByUsername(userContact.getUsername());
-        if(findUser == null)
-        {
-            throw new UserNotFoundException("User with "+userContact.getUsername() +" username doesn't exists");
-        }
-        UserContactDetails userContactDetails = new UserContactDetails();
-        userContactDetails.setUsername(userContact.getUsername());
-        userContactDetails.setPhoneNumber(userContact.getPhoneNumber());
-        userContactRepository.save(userContactDetails);
-        log.info("User Contact Details Added with ID: {}", userContactDetails.getId());
-        log.info("Username: {}", userContactDetails.getUsername());
-        return "Added";
+    public CompletableFuture<String> addContactDetails(String name, UserContact userContact) {
+        return CompletableFuture.supplyAsync(() -> {
+            Errors errors = new BeanPropertyBindingResult(userContact, "userLogin");
+            userContactValidator.validate(userContact, errors);
+            if (errors.hasErrors()) {
+                throw new InvalidInputException("Invalid Contact details");
+            }
+            UserRegisterDetails findUser = userRepository.findByUsername(userContact.getUsername());
+            if (findUser == null) {
+                throw new UserNotFoundException("User with " + userContact.getUsername() + " username doesn't exist");
+            }
+            UserContactDetails userContactDetails = new UserContactDetails();
+            userContactDetails.setUsername(userContact.getUsername());
+            userContactDetails.setPhoneNumber(userContact.getPhoneNumber());
+            userContactRepository.save(userContactDetails);
+            log.info("User Contact Details Added with ID: {}", userContactDetails.getId());
+            log.info("Username: {}", userContactDetails.getUsername());
+            return "Added";
+        });
     }
 }

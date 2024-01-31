@@ -56,12 +56,12 @@ public class UserControllerAdvice {
         log.error("Not Valid Argument: {}", message);
         return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex)
-    {
-        errorResponse.setError("Bad Request");
-        errorResponse.setMessage(ex.getMessage());
-        log.error("Bad Request\n Error: {}", ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ErrorResponse> handleException(Exception ex)
+//    {
+//        errorResponse.setError("Bad Request");
+//        errorResponse.setMessage(ex.getMessage());
+//        log.error("Bad Request\n Error: {}", ex.getMessage());
+//        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+//    }
 }

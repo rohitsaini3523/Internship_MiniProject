@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 
+import java.util.concurrent.CompletableFuture;
+
 @Slf4j
 @Service
 public class LoginService implements LoginServiceInterface{
@@ -24,34 +26,46 @@ public class LoginService implements LoginServiceInterface{
     }
     @Async("MultiRequestAsyncThread")
     @Override
-    public UserLogin getUserDetails(String name)
-    {
-        UserRegisterDetails userRegisterDetails = userRepository.findByUsername(name);
-        if(userRegisterDetails !=null) {
-            return UserLogin.builder().username(userRegisterDetails.getUsername())
-                    .password(userRegisterDetails.getPassword()).build();
-        }
-        throw new UserNotFoundException("User doesn't exists");
+    public CompletableFuture<UserLogin> getUserDetails(String name) {
+        CompletableFuture<UserLogin> future = new CompletableFuture<>();
+        CompletableFuture.runAsync(() -> {
+            UserRegisterDetails userRegisterDetails = userRepository.findByUsername(name);
+            if (userRegisterDetails != null) {
+                UserLogin userLogin = UserLogin.builder()
+                        .username(userRegisterDetails.getUsername())
+                        .password(userRegisterDetails.getPassword())
+                        .build();
+                future.complete(userLogin);
+            } else {
+                future.completeExceptionally(new UserNotFoundException("User doesn't exist"));
+            }
+        });
+
+        return future;
     }
     @Async("MultiRequestAsyncThread")
     @Override
-    public String login(UserLogin userLogin)
-    {
-        Errors errors = new BeanPropertyBindingResult(userLogin, "userLogin");
-        userLoginValidator.validate(userLogin, errors);
-        if(errors.hasErrors()) {
-            throw new InvalidInputException("Invalid login details");
-        }
-        UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin);
-        UserRegisterDetails FindUsername = userRepository.findByUsername(userLogin.getUsername());
-        if(FindUsername != null) {
-            if (userRegisterDetails != null) {
-                log.info("User Logged in is: {}!", userLogin.getUsername());
-                return "Found";
+    public CompletableFuture<String> login(UserLogin userLogin) {
+        return CompletableFuture.supplyAsync(() -> {
+            Errors errors = new BeanPropertyBindingResult(userLogin, "userLogin");
+            userLoginValidator.validate(userLogin, errors);
+            if (errors.hasErrors()) {
+                throw new InvalidInputException("Invalid login details");
             }
-            throw new InvalidInputException("Wrong Password!");
-        }
-        throw new UserNotFoundException("User doesn't exists");
+
+            UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin);
+            UserRegisterDetails findUsername = userRepository.findByUsername(userLogin.getUsername());
+            if (findUsername != null) {
+                if (userRegisterDetails != null) {
+                    log.info("User Logged in is: {}!", userLogin.getUsername());
+                    return "Found";
+                } else {
+                    throw new InvalidInputException("Wrong Password!");
+                }
+            } else {
+                throw new UserNotFoundException("User doesn't exist");
+            }
+        });
     }
 
 }
