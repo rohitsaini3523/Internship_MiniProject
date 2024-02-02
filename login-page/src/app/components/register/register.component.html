@@ -1,1 +1,27 @@
-<p>register works!</p>
+
+
+
+<br>
+<form [formGroup]="registerForm">
+<p-card header="register" [style]=" { width: '300px' }">
+    <div class="field">
+        <label for="username">Username</label>
+        <input type="text" pInputText formControlName="username" name="username" placeholder="enter your name heree"/>
+
+    </div>
+    <div class="field">
+        <label for="password">Password</label>
+        <input type="password" pInputText formControlName="password" name="password" placeholder="enter your password"/>
+
+    </div>
+    <div class="field">
+        <label for="email">Email</label>
+        <input type="email" pInputText formControlName="email" name="email" placeholder="enter your email"/>
+
+    </div>
+    <p-button label="register" ></p-button>
+    <div class="mt-1">
+        already registered? <a routerLink="/login">login here</a>
+    </div>
+</p-card>
+</form>

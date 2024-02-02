@@ -1,4 +1,4 @@
-<p>login works!</p>
+
 
 
 <br>
@@ -10,11 +10,14 @@
 
     </div>
     <div class="field">
-        <label for="passwword">Password</label>
-        <input type="password" pInputText formControlName="passwword" name="passwword" placeholder="enter your password"/>
+        <label for="password">Password</label>
+        <input type="password" pInputText formControlName="password" name="password" placeholder="enter your password"/>
 
     </div>
-    <p-button label="sign-in" ></p-button>
+    <p-button label="sign-in"
+    (click)="login()"
+    
+    ></p-button>
     <div class="mt-1">
         dont have an account yet? <a routerLink="/register">register here</a>
     </div>
