@@ -4,7 +4,7 @@
 
 
 after clicking on regsiter , it'll be directed to a new register page .
-![image](https://github.com/rohitsaini3523/Internship_MiniProject/assets/121424500/39e2823b-238a-49d0-849f-5e52fa253504)
+![image](https://github.com/rohitsaini3523/Internship_MiniProject/assets/121424500/d45ee9c4-7458-4182-a511-8786a42bbdc9)
 
 
 ## Use of PrimeNg
