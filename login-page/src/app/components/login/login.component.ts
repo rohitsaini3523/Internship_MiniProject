@@ -1,33 +1,38 @@
-// import { HttpClient } from '@angular/common/http';
 import { Component } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Credentials } from '../../model/credentials';
 import { BackendService } from '../../services/backend/backend.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  
+  credentials!: Credentials;
+  loginForm: FormGroup; 
+  submitted = false;
 
-  credentials!: Credentials
+  constructor(private fb: FormBuilder, private backend_service: BackendService) {
+    this.loginForm = this.fb.group({
+      username: ['', [Validators.required]],
+      password: ['', [Validators.required]]
+    });
+  }
+  get formControls() { 
+    return this.loginForm.controls; 
+  }
 
-  loginForm: FormGroup = new FormGroup ({
-    // dbt
-    username : new FormControl(''),
-    password : new FormControl('')
-  })
+  login() {
+    this.submitted = true; 
 
+    if (this.loginForm.invalid) {
+      return;
+    }
 
-
-  constructor(private fb: FormBuilder , private bs: BackendService) { }
-     login() {
-      this.credentials = new Credentials();
-      this.credentials.username =this.loginForm.get("username")?.value;
-      this.credentials.password =this.loginForm.get("password")?.value;
-      this.bs.newLogin(this.credentials)}
-  
-
+    this.credentials = new Credentials();
+    this.credentials.username = this.loginForm.get("username")?.value;
+    this.credentials.password = this.loginForm.get("password")?.value;
+    this.backend_service.newLogin(this.credentials);
+  }
 }

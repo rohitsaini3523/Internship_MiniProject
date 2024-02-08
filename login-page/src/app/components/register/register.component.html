@@ -1,27 +1,74 @@
-
-
-
-<br>
-<form [formGroup]="registerForm">
-<p-card header="register" [style]=" { width: '300px' }">
-    <div class="field">
-        <label for="username">Username</label>
-        <input type="text" pInputText formControlName="username" name="username" placeholder="enter your name heree"/>
-
-    </div>
-    <div class="field">
+<form [formGroup]="registerForm" class="register-form" (ngSubmit)="submitdetails()">
+    <p-card header="Register">
+      <div class="field">
+        <label for="fullname">Full Name</label>
+        <input
+          type="text"
+          pInputText
+          formControlName="fullname"
+          name="fullname"
+          placeholder="Enter your full name here"
+          required
+        />
+        <div *ngIf="registerForm.controls['fullname'].hasError('required')">
+          Full Name is required.
+        </div>
+        <div *ngIf="registerForm.controls['fullname'].hasError('pattern')">
+          fullname must be between 6 & 30 characters &  must start with a letter.
+        </div>
+      </div>
+      <div class="field">
         <label for="password">Password</label>
-        <input type="password" pInputText formControlName="password" name="password" placeholder="enter your password"/>
-
-    </div>
-    <div class="field">
+        <input
+          type="password"
+          pInputText
+          formControlName="password"
+          name="password"
+          placeholder="Enter your password"
+          required
+        />
+        <div *ngIf="registerForm.controls['password'].hasError('required')">
+          Password is required.
+        </div>
+      </div>
+      <div class="field">
+        <label for="confirm_password">Confirm Password</label>
+        <input
+          type="password"
+          pInputText
+          formControlName="confirm_password"
+          name="confirm_password"
+          placeholder="Re-enter your password"
+          required
+        />
+        <div *ngIf="registerForm.controls['confirm_password'].hasError('required')">
+          Confirm Password is required.
+        </div>
+        <div *ngIf="registerForm.controls['confirm_password'].hasError('passwordMismatch')">
+          Passwords do not match.
+        </div>
+      </div>
+      <div class="field">
         <label for="email">Email</label>
-        <input type="email" pInputText formControlName="email" name="email" placeholder="enter your email"/>
-
-    </div>
-    <p-button label="register" ></p-button>
-    <div class="mt-1">
-        already registered? <a routerLink="/login">login here</a>
-    </div>
-</p-card>
-</form>
+        <input
+          type="email"
+          pInputText
+          formControlName="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+        />
+        <div *ngIf="registerForm.controls['email'].hasError('required')">
+          Email is required.
+        </div>
+        <div *ngIf="registerForm.controls['email'].hasError('email')">
+          Invalid email format.
+        </div>
+      </div>
+      <p-button label="Register" (click)="register()" [disabled]="registerForm.invalid" type="submit"></p-button>
+      <div class="mt-1">
+        Already registered? <a routerLink="/login">Login here</a>
+      </div>
+    </p-card> 
+  </form>
+  

@@ -10,7 +10,7 @@ export class BackendService {
   constructor(private http:HttpClient) { }
 
   newLogin(credentials: Credentials) {
-    this.http.post("enter url here", credentials,{}).subscribe({next:(Response)=>{
+    this.http.post("enter url here", credentials,{responseType:"text"}).subscribe({next:(Response)=>{
       console.log(Response);} ,
     
       error:(show_error)=>{
