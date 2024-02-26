@@ -1,6 +1,6 @@
-package com.example.Backend.services;
+package com.example.contactservice.services;
 
-import com.example.Backend.model.UserContact;
+import com.example.contactservice.model.UserContact;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

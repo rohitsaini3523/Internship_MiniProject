@@ -1,18 +1,19 @@
-package com.example.Backend.services;
+package com.example.contactservice.services;
 
-import com.example.Backend.entity.UserContactDetails;
-import com.example.Backend.entity.UserRegisterDetails;
-import com.example.Backend.exceptions.InvalidInputException;
-import com.example.Backend.exceptions.UserNotFoundException;
-import com.example.Backend.model.UserContact;
-import com.example.Backend.respository.UserContactRepository;
-import com.example.Backend.respository.UserRepository;
-import com.example.Backend.validator.UserContactValidator;
+import com.example.contactservice.entity.UserContactDetails;
+import com.example.contactservice.exceptions.InvalidInputException;
+import com.example.contactservice.exceptions.UserNotFoundException;
+import com.example.contactservice.model.UserContact;
+import com.example.contactservice.model.UserRegister;
+import com.example.contactservice.respository.UserContactRepository;
+import com.example.contactservice.validator.UserContactValidator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -22,14 +23,14 @@ import java.util.stream.Collectors;
 @Service
 public class ContactService implements ContactServiceInterface {
 
+    @Autowired
+    private RestTemplate restTemplate;
     UserContactRepository userContactRepository;
-    UserRepository userRepository;
     UserContactValidator userContactValidator;
 
-    ContactService(UserContactRepository userContactRepository, UserRepository userRepository,UserContactValidator userContactValidator)
+    ContactService(UserContactRepository userContactRepository, UserContactValidator userContactValidator)
     {
         this.userContactRepository = userContactRepository;
-        this.userRepository = userRepository;
         this.userContactValidator = userContactValidator;
     }
     @Async("MultiRequestAsyncThread")
@@ -58,7 +59,7 @@ public class ContactService implements ContactServiceInterface {
             if (errors.hasErrors()) {
                 throw new InvalidInputException("Invalid Contact details");
             }
-            UserRegisterDetails findUser = userRepository.findByUsername(userContact.getUsername());
+            UserRegister findUser = this.restTemplate.getForObject("http://backend/user/" + name, UserRegister.class);
             if (findUser == null) {
                 throw new UserNotFoundException("User with " + userContact.getUsername() + " username doesn't exist");
             }

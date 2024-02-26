@@ -1,4 +1,4 @@
-package com.example.Backend.model;
+package com.example.contactservice.model;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

@@ -8,6 +8,7 @@ import com.example.Backend.validator.UserRegisterValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -33,9 +34,11 @@ public class RegisterService implements RegisterServiceInterface{
             if (errors.hasErrors()) {
                 throw new InvalidInputException("Invalid login details");
             }
+            BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
             UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
             userRegisterDetails.setUsername(userRegister.getUsername());
-            userRegisterDetails.setPassword(userRegister.getPassword());
+            userRegisterDetails.setPassword(encoder.encode(userRegister.getPassword()));
             userRegisterDetails.setEmail(userRegister.getEmail());
             userRepository.save(userRegisterDetails);
             log.info("User Registered with ID: {}", userRegisterDetails.getId());

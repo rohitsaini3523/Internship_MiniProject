@@ -1,6 +1,6 @@
-package com.example.Backend.respository;
+package com.example.contactservice.respository;
 
-import com.example.Backend.entity.UserContactDetails;
+import com.example.contactservice.entity.UserContactDetails;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

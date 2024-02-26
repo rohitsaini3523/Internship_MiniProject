@@ -1,4 +1,4 @@
-package com.example.Backend;
+package com.example.AuthenticationService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,11 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @SpringBootApplication
-public class BackendApplication {
+public class AuthenticationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BackendApplication.class, args);
+		SpringApplication.run(AuthenticationServiceApplication.class, args);
 	}
+
 	@Bean
 	@LoadBalanced
 	public RestTemplate restTemplate() {

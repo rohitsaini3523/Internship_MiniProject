@@ -16,6 +16,7 @@ import java.util.Set;
 public class UserRegisterDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="ID")
     private Long id;
 
     @NotNull
@@ -29,10 +30,4 @@ public class UserRegisterDetails {
     @NotNull
     @Column(nullable = false)
     private String email;
-
-    @OneToMany(targetEntity = UserContactDetails.class, cascade = CascadeType.ALL)
-    @JoinColumn(name = "username", referencedColumnName = "username")
-    private Set<UserContactDetails> userContactDetailsSet;
-
-
 }

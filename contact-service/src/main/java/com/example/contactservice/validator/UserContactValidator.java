@@ -1,7 +1,6 @@
-package com.example.Backend.validator;
+package com.example.contactservice.validator;
 
-import com.example.Backend.model.UserContact;
-import com.example.Backend.model.UserLogin;
+import com.example.contactservice.model.UserContact;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -12,7 +11,7 @@ public class UserContactValidator implements Validator {
 
     @Override
     public boolean supports(Class<?> c) {
-        return UserLogin.class.equals(c);
+        return UserContact.class.equals(c);
     }
 
     @Override

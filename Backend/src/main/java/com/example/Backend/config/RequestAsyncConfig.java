@@ -19,12 +19,6 @@ public class RequestAsyncConfig {
             log.info("Task submitted: {}", task.toString());
             super.execute(task);
         }
-
-        @Override
-        protected void afterExecute(Runnable r, Throwable t) {
-            log.info("Task completed: {}", r.toString());
-            super.afterExecute(r, t);
-        }
     };
         executor.setCorePoolSize(4);
         executor.setMaxPoolSize(64);
