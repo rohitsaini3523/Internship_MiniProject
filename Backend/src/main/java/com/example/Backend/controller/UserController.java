@@ -44,7 +44,17 @@ public class UserController {
                 .exceptionally(ex -> {throw new UserNotFoundException("User Not Registered!");});
     }
 
-
+    @Operation(summary = "Display user details", description = "Get user details by username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "404",description = "User Doesn't exists"),
+            @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
+    })
+    @GetMapping("/userphoneNumber/{userphoneNumber}")
+    public CompletableFuture<ResponseEntity<UserLogin>> displayUserwithPhoneNumber(@PathVariable(value = "userphoneNumber") String userphoneNumber) {
+        return loginServiceInterface.getUserDetailsWithPhoneNumber(userphoneNumber)
+                .thenApply(userLogin -> ResponseEntity.ok().body(userLogin))
+                .exceptionally(ex -> {throw new UserNotFoundException("User Not Registered!");});
+    }
     @Operation(summary = "Register user", description = "Register a new user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully!"),

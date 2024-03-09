@@ -11,11 +11,9 @@ spring:
     gateway:
       routes:
         - id: backend
-          uri: lb://BACKEND
+          uri: lb://customer-service
           predicates:
             - Path=/user/**
-          filters:
-            - AuthenticationFilter
         - id: AuthenticationService
           uri: lb://AuthenticationService
           predicates:
@@ -24,7 +22,5 @@ spring:
           uri: lb://CONTACT-SERVICE
           predicates:
             - Path=/contact/**
-          filters:
-            - AuthenticationFilter
   application:
     name: API-GATEWAY

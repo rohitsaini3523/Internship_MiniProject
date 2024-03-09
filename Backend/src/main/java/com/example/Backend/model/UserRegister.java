@@ -22,4 +22,8 @@ public class UserRegister {
 
     @NotBlank(message = "Email is required!")
     private String email;
+
+    @Size(min = 10, message = "Phone Number must be minimum of 10 digit!")
+    @NotBlank(message = "Phone is required!")
+    private String phoneNumber;
 }

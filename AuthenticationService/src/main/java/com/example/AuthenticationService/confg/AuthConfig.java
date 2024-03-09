@@ -29,11 +29,12 @@ public class AuthConfig {
     }
 
 
+    // This will in api gateway
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authrequest ->authrequest
-                .requestMatchers("/user/register", "/auth/login", "/auth/refreshToken","auth/validate").permitAll())
+                .requestMatchers("/auth/login", "/auth/refreshToken","auth/validate").permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();

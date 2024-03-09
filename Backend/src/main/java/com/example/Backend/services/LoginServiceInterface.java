@@ -8,6 +8,7 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public interface LoginServiceInterface {
     public CompletableFuture<UserLogin> getUserDetails(String name);
+    public CompletableFuture<UserLogin> getUserDetailsWithPhoneNumber(String userphoneNumber);
     public CompletableFuture<String> login(UserLogin userLogin);
 
 }

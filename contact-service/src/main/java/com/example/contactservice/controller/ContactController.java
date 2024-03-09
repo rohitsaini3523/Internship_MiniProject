@@ -11,12 +11,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -64,9 +63,12 @@ public class ContactController {
     @PostMapping("/{name}/add")
     public ResponseEntity<?> addContactDetails(@PathVariable(value="name") String name, @RequestHeader(HttpHeaders.AUTHORIZATION) String token , @RequestBody @Valid UserContact userContact) throws ExecutionException, InterruptedException {
         token = extractTokenFromHeader(token);
-        ResponseEntity<String> response = this.restTemplate.postForEntity("http://AuthenticationService/auth/validate",token,String.class);
-        System.out.println(response.toString());
-        if (userContact.getUsername().equals(name) && response.toString().equals(name)) {
+        URI uri = URI.create("http://AuthenticationService/auth/validate");
+        RequestEntity<String> requestEntity = new RequestEntity<>(token, HttpMethod.POST, uri);
+        CompletableFuture<ResponseEntity<String>> responseFuture = CompletableFuture.supplyAsync(() -> restTemplate.exchange(requestEntity, String.class));
+        ResponseEntity<String> response = responseFuture.get();
+        System.out.println(response.getBody());
+        if (userContact.getUsername().equals(name) && response.getBody().equals(userContact.getUsername())) {
             CompletableFuture<String> addContactFuture = contactServiceInterface.addContactDetails(name, userContact);
             String result = addContactFuture.get();
             log.info("User Contact Detail Added!");

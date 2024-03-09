@@ -45,6 +45,25 @@ public class LoginService implements LoginServiceInterface{
     }
     @Async("MultiRequestAsyncThread")
     @Override
+    public CompletableFuture<UserLogin> getUserDetailsWithPhoneNumber(String userphoneNumber) {
+        CompletableFuture<UserLogin> future = new CompletableFuture<>();
+        CompletableFuture.runAsync(() -> {
+            UserRegisterDetails userRegisterDetails = userRepository.findByPhoneNumber(userphoneNumber);
+            if (userRegisterDetails != null) {
+                UserLogin userLogin = UserLogin.builder()
+                        .username(userRegisterDetails.getUsername())
+                        .password(userRegisterDetails.getPassword())
+                        .build();
+                future.complete(userLogin);
+            } else {
+                future.completeExceptionally(new UserNotFoundException("User doesn't exist"));
+            }
+        });
+
+        return future;
+    }
+    @Async("MultiRequestAsyncThread")
+    @Override
     public CompletableFuture<String> login(UserLogin userLogin) {
         return CompletableFuture.supplyAsync(() -> {
             Errors errors = new BeanPropertyBindingResult(userLogin, "userLogin");

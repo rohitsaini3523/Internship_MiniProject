@@ -40,6 +40,7 @@ public class RegisterService implements RegisterServiceInterface{
             userRegisterDetails.setUsername(userRegister.getUsername());
             userRegisterDetails.setPassword(encoder.encode(userRegister.getPassword()));
             userRegisterDetails.setEmail(userRegister.getEmail());
+            userRegisterDetails.setPhoneNumber(userRegister.getPhoneNumber());
             userRepository.save(userRegisterDetails);
             log.info("User Registered with ID: {}", userRegisterDetails.getId());
             log.info("User Registered: {}", userRegister.getUsername());
