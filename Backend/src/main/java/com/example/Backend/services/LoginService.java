@@ -33,7 +33,7 @@ public class LoginService implements LoginServiceInterface{
             if (userRegisterDetails != null) {
                 UserLogin userLogin = UserLogin.builder()
                         .username(userRegisterDetails.getUsername())
-                        .password(userRegisterDetails.getPassword())
+                        .phoneNumber(userRegisterDetails.getPhoneNumber())
                         .build();
                 future.complete(userLogin);
             } else {
@@ -52,7 +52,7 @@ public class LoginService implements LoginServiceInterface{
             if (userRegisterDetails != null) {
                 UserLogin userLogin = UserLogin.builder()
                         .username(userRegisterDetails.getUsername())
-                        .password(userRegisterDetails.getPassword())
+                        .phoneNumber(userRegisterDetails.getPhoneNumber())
                         .build();
                 future.complete(userLogin);
             } else {

@@ -2,25 +2,27 @@ server:
   port: 8083
 
 eureka:
-  instance:
-    hostname: localhost
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
 
 
 spring:
   cloud:
     gateway:
       routes:
-        - id: backend
+        - id: customer-service
           uri: lb://customer-service
           predicates:
             - Path=/user/**
+          filters:
+            - AuthenticationFilter
         - id: AuthenticationService
           uri: lb://AuthenticationService
           predicates:
             - Path=/auth/**
-        - id: CONTACT-SERVICE
-          uri: lb://CONTACT-SERVICE
-          predicates:
-            - Path=/contact/**
+          filters:
+            - AuthenticationFilter
   application:
     name: API-GATEWAY
+jwt_secret: "3aabc2c36ff8975d5eb8aea77d2c7e0f534e4010a079f18adbc9ae90691b6918"

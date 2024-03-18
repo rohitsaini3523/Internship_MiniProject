@@ -18,4 +18,5 @@ public class UserLogin {
     @Size(min=8,message = "Password must be minimum of 8 character!")
     @NotBlank(message = "Password is Required!")
     private String password;
+    private String phoneNumber;
 }
