@@ -1,0 +1,25 @@
+<br>
+<form [formGroup]="loginForm" class="login-form">
+  <p-card header="Login">
+    <div class="field">
+      <label for="username">Username</label> 
+
+      <input type="text" pInputText formControlName="username" name="username" placeholder="Enter your name here"/>
+
+
+      <div *ngIf="submitted && loginForm.get('username')?.hasError('required')" class="text-danger">Username is required</div>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+
+      <input type="password" pInputText formControlName="password" name="password" placeholder="Enter your password"/>
+
+      <div *ngIf="submitted && loginForm.get('password')?.hasError('required')" class="text-danger">Password is required</div>
+    </div>
+    
+    <p-button label="Sign in" (click)="login()"></p-button>
+    <div class="mt-1">
+      Don't have an account yet? <a routerLink="/register">Register here</a>
+    </div>
+  </p-card>
+</form>
