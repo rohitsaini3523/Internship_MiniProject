@@ -43,8 +43,8 @@ class UserRepositoryTest {
     void itShouldFindByUsername() {
         String username = "rs3523";
         expectedUser = testUserRepository.findByUsername(username);
-        assertNotNull(expectedUser);
         UserRegisterDetails result = testUserRepository.findByUsername(username);
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUser);
     }
 
@@ -54,8 +54,8 @@ class UserRepositoryTest {
         String password = "Rohit@123";
         UserLogin userLogin = new UserLogin(username, password);
         expectedUser = testUserRepository.findByUsernameAndPassword(userLogin);
-        assertNotNull(expectedUser);
         UserRegisterDetails result = testUserRepository.findByUsernameAndPassword(UserLogin.builder().username(username).password(password).build());
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUser);
     }
 }
