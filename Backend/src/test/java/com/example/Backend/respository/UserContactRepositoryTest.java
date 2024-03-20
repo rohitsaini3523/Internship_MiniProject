@@ -38,8 +38,8 @@ class UserContactRepositoryTest {
                 .phoneNumber("9368000766")
                 .build();
         testUserContactRepository.save(expectedUserContactDetails);
-        assertNotNull(expectedUserContactDetails);
         UserContactDetails result = testUserContactRepository.findByUsername(username);
+        assertNotNull(result);
         assertThat(result).isEqualTo(expectedUserContactDetails);
     }
 
@@ -59,9 +59,8 @@ class UserContactRepositoryTest {
                 .build();
         testUserContactRepository.save(userContactDetails2);
         userContactDetailsList.add(userContactDetails2);
-        assertNotNull(userContactDetails1);
-        assertNotNull(userContactDetails2);
         List<UserContactDetails> result = testUserContactRepository.findAllByUsername(username);
+        assertNotNull(result);
         assertThat(result).isEqualTo(userContactDetailsList);
 
     }
