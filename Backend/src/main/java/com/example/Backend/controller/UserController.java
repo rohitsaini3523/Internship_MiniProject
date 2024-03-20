@@ -77,7 +77,7 @@ public class UserController {
     public ResponseEntity<?> loginUser(@RequestBody @Valid UserLogin userLogin) throws ExecutionException, InterruptedException{
         log.info("Thread info: {}",Thread.currentThread());
         CompletableFuture<String> loginFuture = loginServiceInterface.login(userLogin);
-        String result = loginFuture.get();
+        loginFuture.get();
         log.info("User Login: {}", userLogin.getUsername());
         userResponse.setMessage("User Logged in: " + userLogin.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);

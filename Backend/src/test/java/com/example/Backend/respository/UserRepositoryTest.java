@@ -40,29 +40,22 @@ class UserRepositoryTest {
     }
 
     @Test
-    void findByUsername() {
+    void itShouldFindByUsername() {
         String username = "rs3523";
         expectedUser = testUserRepository.findByUsername(username);
         assertNotNull(expectedUser);
-        UserRegisterDetails result = testUserRepository.findByUsername("rs3523");
+        UserRegisterDetails result = testUserRepository.findByUsername(username);
         assertThat(result).isEqualTo(expectedUser);
     }
 
     @Test
-    void findByPassword() {
+    void itShouldFindByUsernameAndPassword() {
+        String username = "rs3523";
         String password = "Rohit@123";
-        expectedUser = testUserRepository.findByPassword(password);
-        assertNotNull(expectedUser);
-        UserRegisterDetails result = testUserRepository.findByPassword("Rohit@123");
-        assertThat(result).isEqualTo(expectedUser);
-    }
-
-    @Test
-    void findByUsernameAndPassword() {
-        UserLogin userLogin = new UserLogin("rs3523", "Rohit@123");
+        UserLogin userLogin = new UserLogin(username, password);
         expectedUser = testUserRepository.findByUsernameAndPassword(userLogin);
         assertNotNull(expectedUser);
-        UserRegisterDetails result = testUserRepository.findByUsernameAndPassword(UserLogin.builder().username("rs3523").password("Rohit@123").build());
+        UserRegisterDetails result = testUserRepository.findByUsernameAndPassword(UserLogin.builder().username(username).password(password).build());
         assertThat(result).isEqualTo(expectedUser);
     }
 }

@@ -31,7 +31,7 @@ class UserContactRepositoryTest {
     }
 
     @Test
-    void findByUsername() {
+    void itShouldFindByUsername() {
         String username = "Rohit";
         expectedUserContactDetails = UserContactDetails.builder()
                 .username("Rohit")
@@ -44,7 +44,7 @@ class UserContactRepositoryTest {
     }
 
     @Test
-    void findAllByUsername() {
+    void itShouldFindAllByUsername() {
         String username = "rs3523";
         List<UserContactDetails> userContactDetailsList = new ArrayList<>();
         UserContactDetails userContactDetails1 = UserContactDetails.builder()
