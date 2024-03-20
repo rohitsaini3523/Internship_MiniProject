@@ -21,14 +21,14 @@ public class RegisterService implements RegisterServiceInterface{
         this.userRepository = userRepository;
         this.userRegisterValidator = userRegisterValidator;
     }
-    @Async("MultiRequestAsyncThread")
+
     @Override
     public String register(UserRegister userRegister)
     {
         Errors errors = new BeanPropertyBindingResult(userRegister, "userLogin");
         userRegisterValidator.validate(userRegister, errors);
         if(errors.hasErrors()) {
-            throw new InvalidInputException("Invalid login details");
+            throw new InvalidInputException("Invalid Register details");
         }
         UserRegisterDetails userRegisterDetails = new UserRegisterDetails();
         userRegisterDetails.setUsername(userRegister.getUsername());

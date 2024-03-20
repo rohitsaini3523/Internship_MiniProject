@@ -22,7 +22,7 @@ public class LoginService implements LoginServiceInterface{
         this.userRepository = userRepository;
         this.userLoginValidator = userLoginValidator;
     }
-    @Async("MultiRequestAsyncThread")
+
     @Override
     public UserLogin getUserDetails(String name)
     {
@@ -33,14 +33,14 @@ public class LoginService implements LoginServiceInterface{
         }
         throw new UserNotFoundException("User doesn't exists");
     }
-    @Async("MultiRequestAsyncThread")
+
     @Override
     public String login(UserLogin userLogin)
     {
         Errors errors = new BeanPropertyBindingResult(userLogin, "userLogin");
         userLoginValidator.validate(userLogin, errors);
         if(errors.hasErrors()) {
-            throw new InvalidInputException("Invalid login details");
+            throw new InvalidInputException("Invalid Input details");
         }
         UserRegisterDetails userRegisterDetails = userRepository.findByUsernameAndPassword(userLogin);
         UserRegisterDetails FindUsername = userRepository.findByUsername(userLogin.getUsername());
