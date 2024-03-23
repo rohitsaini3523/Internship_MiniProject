@@ -4,9 +4,7 @@ import com.example.Backend.model.UserContact;
 import com.example.Backend.model.UserLogin;
 import com.example.Backend.model.UserRegister;
 import com.example.Backend.model.UserResponse;
-import com.example.Backend.services.ContactServiceInterface;
-import com.example.Backend.services.LoginServiceInterface;
-import com.example.Backend.services.RegisterServiceInterface;
+import com.example.Backend.services.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,14 +23,14 @@ import java.util.List;
 @RequestMapping("/user/")
 public class UserController {
 
-    RegisterServiceInterface registerServiceInterface;
-    LoginServiceInterface loginServiceInterface;
-    ContactServiceInterface contactServiceInterface;
+    RegisterServiceImpl registerService;
+    LoginServiceImpl loginService;
+    ContactServiceImpl contactService;
     UserResponse userResponse = new UserResponse();
-    UserController(RegisterServiceInterface registerServiceInterface, LoginServiceInterface loginServiceInterface,ContactServiceInterface contactServiceInterface) {
-        this.registerServiceInterface = registerServiceInterface;
-        this.loginServiceInterface = loginServiceInterface;
-        this.contactServiceInterface = contactServiceInterface;
+    UserController(RegisterServiceImpl registerService, LoginServiceImpl loginService, ContactServiceImpl contactService) {
+        this.registerService = registerService;
+        this.loginService = loginService;
+        this.contactService = contactService;
     }
 
     @Operation(summary = "Display user details", description = "Get user details by username")
@@ -42,7 +40,7 @@ public class UserController {
     })
     @GetMapping("/{name}")
     public ResponseEntity<?> displayUser(@PathVariable(value = "name") String username) {
-        UserLogin userLogin = this.loginServiceInterface.getUserDetails(username);
+        UserLogin userLogin = this.loginService.getUserDetails(username);
         log.info("Thread info: {}",Thread.currentThread());
         return new ResponseEntity<>(userLogin, HttpStatus.OK);
     }
@@ -53,7 +51,7 @@ public class UserController {
     })
     @GetMapping("/{name}/contact")
     public ResponseEntity<?> displayUserContact(@PathVariable(value = "name") String username) {
-        List<UserContact> userContacts = this.contactServiceInterface.getContactDetails(username);
+        List<UserContact> userContacts = this.contactService.getContactDetails(username);
         if (userContacts.isEmpty()) {
             userResponse.setMessage("No contacts found for user: " + username);
             return new ResponseEntity<>(userResponse, HttpStatus.NOT_FOUND);
@@ -72,7 +70,7 @@ public class UserController {
     })
     @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody @Valid  UserLogin userLogin) {
-        this.loginServiceInterface.login(userLogin);
+        this.loginService.login(userLogin);
         log.info("User Login: {}", userLogin.getUsername());
         userResponse.setMessage("User Logged in: " + userLogin.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.ACCEPTED);
@@ -86,7 +84,7 @@ public class UserController {
     })
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegister userRegister) {
-        this.registerServiceInterface.register(userRegister);
+        this.registerService.register(userRegister);
         log.info("User Registered Successfully!");
         userResponse.setMessage("User Registered Successfully!: "+ userRegister.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
@@ -105,7 +103,7 @@ public class UserController {
         {
             throw new InvalidInputException("Invalid Request!");
         }
-        this.contactServiceInterface.addContactDetails(name, userContact);
+        this.contactService.addContactDetails(name, userContact);
         log.info("User Contact Detail Added!");
         userResponse.setMessage("User Contact Details Added!: "+ userContact.getUsername());
         return new ResponseEntity<>(userResponse,HttpStatus.CREATED);

@@ -8,35 +8,33 @@ import com.example.Backend.model.UserLogin;
 import com.example.Backend.respository.UserRepository;
 import com.example.Backend.validator.UserLoginValidator;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ObjectUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @Slf4j
 @DataJpaTest
-class LoginServiceTest {
-    @Autowired
+class LoginServiceImplTest {
+    @Mock
     UserRepository testUserRepository;
-    LoginServiceInterface loginServiceInterface;
+    @InjectMocks
+    LoginServiceImpl loginService;
+    @InjectMocks
+    UserLoginValidator userLoginValidator;
     UserRegisterDetails user;
     UserContactDetails userContactDetails;
     UserLogin expectedUserLogin;
-    UserLoginValidator userLoginValidator;
 
     @BeforeEach
     void setUp() {
-        userLoginValidator = new UserLoginValidator();
-        loginServiceInterface = new LoginService(testUserRepository, userLoginValidator);
+        loginService = new LoginServiceImpl(testUserRepository, userLoginValidator);
         userContactDetails = UserContactDetails.builder()
                 .username("rs3523")
                 .phoneNumber("9568000766")
@@ -47,7 +45,6 @@ class LoginServiceTest {
                 .email("rohit@gmail.com")
                 .userContactDetailsSet(Set.of(userContactDetails))
                 .build();
-        testUserRepository.save(user);
         expectedUserLogin = UserLogin.builder().username("rs3523").password("Rohit@123").build();
     }
 
@@ -61,16 +58,21 @@ class LoginServiceTest {
     @Test
     void itShouldGetUserDetails() {
         String username = "rs3523";
-        UserLogin result = loginServiceInterface.getUserDetails(username);
+        when(testUserRepository.findByUsername(username)).thenReturn(user);
+        UserLogin result = loginService.getUserDetails(username);
         assertNotNull(result);
         assertThat(result).isEqualTo(expectedUserLogin);
     }
 
     @Test
     void itShouldLogin() {
-        String username = "rs3523";
-        String password = "Rohit@123";
-        String result = loginServiceInterface.login(UserLogin.builder().username(username).password(password).build());
+        UserLogin userLogin = new UserLogin();
+        userLogin.setUsername("rs3523");
+        userLogin.setPassword("Rohit@123");
+        when(testUserRepository.findByUsername(userLogin.getUsername())).thenReturn(user);
+        when(testUserRepository.findByUsernameAndPassword(userLogin)).thenReturn(user);
+        String result = loginService.login(userLogin);
+        assertNotNull(result);
         assertThat(result).isEqualTo("Found");
     }
 
@@ -78,7 +80,7 @@ class LoginServiceTest {
     void itShouldThrow_UserNotFoundException() {
         String username = "noUser";
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
-            loginServiceInterface.getUserDetails(username);
+            loginService.getUserDetails(username);
         });
         assertEquals("User doesn't exists", exception.getMessage());
     }
@@ -87,8 +89,9 @@ class LoginServiceTest {
     void itShouldThrow_InvalidInputExceptionForWrongPassword() {
         String username = "rs3523";
         String password = "wrongPassword";
+        when(testUserRepository.findByUsername(username)).thenReturn(user);
         InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
-            loginServiceInterface.login(UserLogin.builder().username(username).password(password).build());
+            loginService.login(UserLogin.builder().username(username).password(password).build());
         });
         assertEquals("Wrong Password!", exception.getMessage());
     }
@@ -98,7 +101,7 @@ class LoginServiceTest {
         String username = "";
         String password = "password";
         InvalidInputException exception = assertThrows(InvalidInputException.class, () -> {
-            loginServiceInterface.login(UserLogin.builder().username(username).password(password).build());
+            loginService.login(UserLogin.builder().username(username).password(password).build());
         });
         assertEquals("Invalid Input details", exception.getMessage());
     }

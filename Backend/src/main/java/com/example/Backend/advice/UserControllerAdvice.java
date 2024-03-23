@@ -2,6 +2,7 @@ package com.example.Backend.advice;
 
 import com.example.Backend.exceptions.InvalidInputException;
 import com.example.Backend.exceptions.UserNotFoundException;
+import com.example.Backend.exceptions.UserRegistrationException;
 import com.example.Backend.model.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -24,29 +25,29 @@ public class UserControllerAdvice {
             UserNotFoundException ex) {
         errorResponse.setError("User Not Found");
         errorResponse.setMessage(ex.getMessage());
-        log.error(" User not Found: {}",ex.getMessage());
+        log.error(" User not Found: {}", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(
-            DataIntegrityViolationException ex) {
+    @ExceptionHandler(UserRegistrationException.class)
+    public ResponseEntity<ErrorResponse> handleUserRegistrationException(
+            UserRegistrationException ex) {
         errorResponse.setError("User Registration Error");
-        errorResponse.setMessage("Already Exists!");
-        log.error("Data integrity violation occurred during user registration: {}",ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        errorResponse.setMessage("User Already Register");
+        log.error(" User not Found: {}", ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(InvalidInputException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex)
-    {
+    public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
         errorResponse.setError("Invalid Input Error");
         errorResponse.setMessage(ex.getMessage());
         log.error("Invalid Input Error: {}", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex)
-    {
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         String message = "";
         errorResponse.setError("Not Valid Argument");
         message = ex.getBindingResult().getAllErrors().stream()
@@ -54,11 +55,11 @@ public class UserControllerAdvice {
                 .collect(Collectors.joining(", "));
         errorResponse.setMessage(message);
         log.error("Not Valid Argument: {}", message);
-        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex)
-    {
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
         errorResponse.setError("Bad Request");
         errorResponse.setMessage(ex.getMessage());
         log.error("Bad Request\n Error: {}", ex.getMessage());
