@@ -1,4 +1,5 @@
 package com.example.Backend.controller;
+
 import com.example.Backend.exceptions.InvalidInputException;
 import com.example.Backend.model.UserContact;
 import com.example.Backend.model.UserLogin;
@@ -27,6 +28,7 @@ public class UserController {
     LoginServiceImpl loginService;
     ContactServiceImpl contactService;
     UserResponse userResponse = new UserResponse();
+
     UserController(RegisterServiceImpl registerService, LoginServiceImpl loginService, ContactServiceImpl contactService) {
         this.registerService = registerService;
         this.loginService = loginService;
@@ -35,18 +37,18 @@ public class UserController {
 
     @Operation(summary = "Display user details", description = "Get user details by username")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404",description = "User Doesn't exists"),
+            @ApiResponse(responseCode = "404", description = "User Doesn't exists"),
             @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
     })
     @GetMapping("/{name}")
     public ResponseEntity<?> displayUser(@PathVariable(value = "name") String username) {
         UserLogin userLogin = this.loginService.getUserDetails(username);
-        log.info("Thread info: {}",Thread.currentThread());
         return new ResponseEntity<>(userLogin, HttpStatus.OK);
     }
+
     @Operation(summary = "Display user contact details", description = "Get user contact details by {username}/contact")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "404",description = "User Doesn't exists"),
+            @ApiResponse(responseCode = "404", description = "User Doesn't exists"),
             @ApiResponse(responseCode = "200", description = "User Fetched Successfully")
     })
     @GetMapping("/{name}/contact")
@@ -60,8 +62,6 @@ public class UserController {
         }
     }
 
-
-
     @Operation(summary = "Login user", description = "Authenticate user with provided credentials")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "202", description = "User Logged in Successfully!"),
@@ -69,7 +69,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Wrong Password!")
     })
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody @Valid  UserLogin userLogin) {
+    public ResponseEntity<?> loginUser(@RequestBody @Valid UserLogin userLogin) {
         this.loginService.login(userLogin);
         log.info("User Login: {}", userLogin.getUsername());
         userResponse.setMessage("User Logged in: " + userLogin.getUsername());
@@ -86,7 +86,7 @@ public class UserController {
     public ResponseEntity<?> registerUser(@RequestBody @Valid UserRegister userRegister) {
         this.registerService.register(userRegister);
         log.info("User Registered Successfully!");
-        userResponse.setMessage("User Registered Successfully!: "+ userRegister.getUsername());
+        userResponse.setMessage("User Registered Successfully!: " + userRegister.getUsername());
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
 
     }
@@ -98,14 +98,13 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Insufficient Parameters!")
     })
     @PostMapping("/{name}/add/contact")
-    public ResponseEntity<?> addContactDetails(@PathVariable(value="name") String name, @RequestBody @Valid UserContact userContact){
-        if(!userContact.getUsername().equals(name))
-        {
+    public ResponseEntity<?> addContactDetails(@PathVariable(value = "name") String name, @RequestBody @Valid UserContact userContact) {
+        if (!userContact.getUsername().equals(name)) {
             throw new InvalidInputException("Invalid Request!");
         }
         this.contactService.addContactDetails(name, userContact);
         log.info("User Contact Detail Added!");
-        userResponse.setMessage("User Contact Details Added!: "+ userContact.getUsername());
-        return new ResponseEntity<>(userResponse,HttpStatus.CREATED);
+        userResponse.setMessage("User Contact Details Added!: " + userContact.getUsername());
+        return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
     }
 }
