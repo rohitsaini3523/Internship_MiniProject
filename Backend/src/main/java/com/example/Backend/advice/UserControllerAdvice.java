@@ -33,7 +33,7 @@ public class UserControllerAdvice {
     public ResponseEntity<ErrorResponse> handleUserRegistrationException(
             UserRegistrationException ex) {
         errorResponse.setError("User Registration Error");
-        errorResponse.setMessage("User Already Register");
+        errorResponse.setMessage("User Already Registered");
         log.error(" User not Found: {}", ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
