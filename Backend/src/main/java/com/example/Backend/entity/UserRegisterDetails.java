@@ -10,7 +10,7 @@ import java.util.Set;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "User_Details", uniqueConstraints = {
+@Table(name = "User_Details_1", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"username"})
 })
 public class UserRegisterDetails {

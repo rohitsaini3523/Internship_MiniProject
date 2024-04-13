@@ -32,13 +32,12 @@ public class ContactStepDefination extends StartupHook {
         responseRegister = restTemplate.postForEntity("http://localhost:8083/user/register", tester, UserResponse.class);
         testContact.setUsername(tester.getUsername());
         testContact.setPhoneNumber("1234567890");
-        responseContact = restTemplate.postForEntity("http://localhost:8083/user/newuser1/add/contact", testContact, UserResponse.class);
-
     }
 
     @When("System processes add contact request for valid username")
     public void systemProcessesAddContactRequestForValidUsername() {
         log.info("Processing add contact request for valid username");
+        responseContact = restTemplate.postForEntity("http://localhost:8083/user/newuser1/add/contact", testContact, UserResponse.class);
         Serenity.setSessionVariable("responseContact").to(responseContact.getBody());
     }
 
@@ -50,17 +49,17 @@ public class ContactStepDefination extends StartupHook {
     @Given("User calls display contact endpoint for valid username")
     public void userCallsDisplayContactEndpointForValidUsername() {
         testContact.setUsername("newuser1");
-         result = restTemplate.exchange(
-                "http://localhost:8083/user/newuser1/contact",
-                HttpMethod.GET,
-                null,
-                new ParameterizedTypeReference<List<UserContact>>() {}
-        );
     }
 
     @When("System processes display contact request for valid username")
     public void systemProcessesDisplayContactRequestForValidUsername() {
         log.info("Processing display contact request for valid username");
+        result = restTemplate.exchange(
+                "http://localhost:8083/user/newuser1/contact",
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<UserContact>>() {}
+        );
         Serenity.setSessionVariable("responseContactDisplay").to(result.getBody());
     }
 

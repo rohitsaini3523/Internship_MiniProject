@@ -22,12 +22,12 @@ public class RegisterStepDefination extends StartupHook {
         tester.setUsername("user1");
         tester.setEmail("tester@gmail.com");
         tester.setPassword("Pass@123");
-        response = restTemplate.postForEntity("http://localhost:8083/user/register", tester, UserResponse.class);
     }
 
     @When("System processes register request")
     public void systemProcessesRegisterRequest() {
         log.info("Processing register request");
+        response = restTemplate.postForEntity("http://localhost:8083/user/register", tester, UserResponse.class);
         Serenity.setSessionVariable("response").to(response.getBody());
     }
 

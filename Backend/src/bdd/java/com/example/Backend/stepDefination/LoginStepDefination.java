@@ -28,12 +28,12 @@ public class LoginStepDefination extends StartupHook{
         responseRegister = restTemplate.postForEntity("http://localhost:8083/user/register", tester, UserResponse.class);
         testLogin.setUsername(tester.getUsername());
         testLogin.setPassword(tester.getPassword());
-        responseLogin = restTemplate.postForEntity("http://localhost:8083/user/login", testLogin, UserResponse.class);
     }
 
     @When("System processes login request for valid user")
     public void systemProcessesLoginRequestForValidUser() {
         log.info("Processing login request");
+        responseLogin = restTemplate.postForEntity("http://localhost:8083/user/login", testLogin, UserResponse.class);
         Serenity.setSessionVariable("response").to(responseLogin.getBody());
     }
 
@@ -46,12 +46,12 @@ public class LoginStepDefination extends StartupHook{
     public void userCallsLoginEndpointForInvalidUser() {
         testLogin.setUsername("nouser");
         testLogin.setPassword("Password");
-        responseLogin = restTemplate.postForEntity("http://localhost:8083/user/login", testLogin, UserResponse.class);
     }
 
     @When("System processes login request for invalid user")
     public void systemProcessesLoginRequestForInvalidUser() {
         log.info("Processing login request");
+        responseLogin = restTemplate.postForEntity("http://localhost:8083/user/login", testLogin, UserResponse.class);
         Serenity.setSessionVariable("responseInvalid").to(responseLogin.getBody());
     }
 
@@ -62,12 +62,13 @@ public class LoginStepDefination extends StartupHook{
 
     @Given("User calls display user endpoint for valid username")
     public void userCallsDisplayUserEndpointForValidUsername() {
-        result = restTemplate.getForEntity("http://localhost:8083/user/user2", UserLogin.class);
+        log.info("User calls display user endpoint");
     }
 
     @When("System processes display user request for valid username")
     public void systemProcessesDisplayUserRequestForValidUsername() {
         log.info("Processing display user request");
+        result = restTemplate.getForEntity("http://localhost:8083/user/user2", UserLogin.class);
         Serenity.setSessionVariable("responseDisplayUser").to(result.getBody());
     }
 
